@@ -3,10 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🚨 AI 층간소음 진원지 레이더</title>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <title>AI 층간소음 진원지 레이더</title>
 
   <style>
     body {
@@ -23,37 +20,27 @@
     }
 
     h1 {
-      color: #00ffcc;
+      color: #79ffc2;
       margin-bottom: 5px;
-      font-size: 28px;
+      font-size: 34px;
       letter-spacing: 1px;
-      margin-top: 10px;
+      margin-top: 20px;
       text-align: center;
     }
 
     p {
-      color: #888;
-      margin-bottom: 25px;
-      font-size: 15px;
+      color: #999;
+      margin-bottom: 30px;
+      font-size: 16px;
       text-align: center;
     }
 
     .main-container {
       display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 50px;
-      max-width: 1050px;
-      width: 100%;
-    }
-
-    .left-panel {
-      display: flex;
       flex-direction: column;
       align-items: center;
       width: 100%;
-      max-width: 390px;
+      max-width: 780px;
     }
 
     .grid-container {
@@ -61,16 +48,15 @@
       grid-template-columns: repeat(3, 110px);
       grid-template-rows: repeat(2, 110px);
       gap: 20px;
-      background-color: #1e1e1e;
+      background-color: #1f1f1f;
       padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-      margin-bottom: 25px;
-      justify-content: center;
+      border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.65);
+      margin-bottom: 30px;
     }
 
     .zone {
-      background-color: #2c2c2c;
+      background-color: #2b2b2b;
       border: 2px solid #444;
       border-radius: 12px;
       display: flex;
@@ -80,25 +66,25 @@
       font-weight: bold;
       color: #555;
       position: relative;
-      transition: all 0.25s ease;
+      transition: 0.25s;
     }
 
     .node-marker {
       position: absolute;
-      top: 6px;
-      right: 6px;
-      width: 14px;
-      height: 14px;
-      background-color: #0088ff;
+      top: 9px;
+      right: 9px;
+      width: 18px;
+      height: 18px;
+      background-color: #4f8cff;
       border-radius: 50%;
-      box-shadow: 0 0 10px #0088ff;
+      box-shadow: 0 0 14px #4f8cff;
     }
 
     .active {
-      background-color: #ff3333 !important;
-      border-color: #ff6666 !important;
+      background-color: #e04440 !important;
+      border-color: #ff7777 !important;
       color: white !important;
-      box-shadow: 0 0 25px #ff3333;
+      box-shadow: 0 0 30px rgba(255, 70, 70, 0.9);
       animation: pulse 0.8s infinite;
     }
 
@@ -110,44 +96,45 @@
 
     .result-box {
       width: 100%;
-      padding: 20px 25px;
-      background-color: #1e1e1e;
-      border-left: 6px solid #00ffcc;
-      border-radius: 8px;
-      font-size: 16px;
-      line-height: 1.6;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      max-width: 460px;
+      padding: 24px 28px;
+      background-color: #1f1f1f;
+      border-left: 6px solid #79ffc2;
+      border-radius: 10px;
+      font-size: 18px;
+      line-height: 1.8;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
       display: none;
       box-sizing: border-box;
+      margin-bottom: 25px;
     }
 
     .result-box span {
-      color: #00ffcc;
+      color: #79ffc2;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 22px;
     }
 
     .right-panel {
       width: 100%;
-      max-width: 430px;
-      background-color: #1e1e1e;
+      max-width: 520px;
+      background-color: #1f1f1f;
       border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      padding: 22px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
       box-sizing: border-box;
     }
 
     .right-panel h2 {
-      font-size: 18px;
-      color: #00ffcc;
-      margin-top: 0;
-      margin-bottom: 15px;
+      font-size: 22px;
+      color: #79ffc2;
+      margin: 0 0 16px 0;
       border-bottom: 1px solid #333;
-      padding-bottom: 10px;
+      padding-bottom: 12px;
     }
 
     .table-wrapper {
-      max-height: 350px;
+      max-height: 310px;
       overflow-y: auto;
       padding-right: 5px;
     }
@@ -160,65 +147,59 @@
     .log-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 15px;
       text-align: left;
     }
 
     .log-table th {
-      color: #888;
+      color: #999;
       font-weight: 600;
-      padding-bottom: 10px;
+      padding: 10px 0;
       border-bottom: 2px solid #333;
       position: sticky;
       top: 0;
-      background-color: #1e1e1e;
+      background-color: #1f1f1f;
       z-index: 1;
     }
 
     .log-table td {
-      padding: 10px 0;
-      border-bottom: 1px solid #222;
+      padding: 11px 0;
+      border-bottom: 1px solid #2a2a2a;
       color: #ccc;
     }
 
     .log-table tr:first-child td {
-      color: #ff6666;
+      color: #ff7777;
       font-weight: bold;
     }
 
     .debug-box {
       width: 100%;
-      max-width: 850px;
-      margin-top: 20px;
-      padding: 12px 16px;
+      max-width: 720px;
+      margin-top: 26px;
+      padding: 14px 18px;
       background: #181818;
       border: 1px solid #333;
       border-radius: 8px;
       color: #999;
-      font-size: 13px;
+      font-size: 14px;
       word-break: break-all;
       box-sizing: border-box;
     }
 
-    .ok { color: #00ffcc; }
-    .err { color: #ff6666; }
+    .ok { color: #79ffc2; }
+    .err { color: #ff7777; }
 
     @media (max-width: 768px) {
-      .main-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-      }
-
+      h1 { font-size: 30px; }
       .grid-container {
         grid-template-columns: repeat(3, 90px);
         grid-template-rows: repeat(2, 90px);
-        padding: 20px;
-        gap: 15px;
+        padding: 22px;
+        gap: 16px;
       }
-
       .zone { font-size: 22px; }
-      .right-panel { max-width: 390px; }
+      .result-box, .right-panel { max-width: 465px; }
     }
   </style>
 </head>
@@ -228,22 +209,20 @@
   <p>150cm x 100cm 실시간 관제 및 로그 시스템</p>
 
   <div class="main-container">
-    <div class="left-panel">
-      <div class="grid-container">
-        <div id="z1" class="zone">P1<div class="node-marker"></div></div>
-        <div id="z2" class="zone">P2</div>
-        <div id="z3" class="zone">P3<div class="node-marker"></div></div>
-        <div id="z4" class="zone">P4<div class="node-marker"></div></div>
-        <div id="z5" class="zone">P5</div>
-        <div id="z6" class="zone">P6<div class="node-marker"></div></div>
-      </div>
+    <div class="grid-container">
+      <div id="z1" class="zone">P1<div class="node-marker"></div></div>
+      <div id="z2" class="zone">P2</div>
+      <div id="z3" class="zone">P3<div class="node-marker"></div></div>
+      <div id="z4" class="zone">P4<div class="node-marker"></div></div>
+      <div id="z5" class="zone">P5</div>
+      <div id="z6" class="zone">P6<div class="node-marker"></div></div>
+    </div>
 
-      <div id="resultBox" class="result-box">
-        📍 진원지: <span id="resZone">P-</span> 구역<br>
-        🔊 소음원: <span id="resSound">대기 중</span><br>
-        🎯 정확도: <span id="resAcc">0</span>%<br>
-        🧩 클래스: <span id="resClass">-</span>
-      </div>
+    <div id="resultBox" class="result-box">
+      📍 진원지: <span id="resZone">P-</span> 구역<br>
+      🔊 소음원: <span id="resSound">대기 중</span><br>
+      🎯 정확도: <span id="resAcc">0</span>%<br>
+      🧩 클래스: <span id="resClass">-</span>
     </div>
 
     <div class="right-panel">
@@ -261,24 +240,20 @@
         </table>
       </div>
     </div>
+
+    <div id="debugBox" class="debug-box">Firebase REST 연결 대기 중...</div>
   </div>
 
-  <div id="debugBox" class="debug-box">Firebase 연결 대기 중...</div>
-
   <script>
-    const firebaseConfig = {
-      databaseURL: "https://noiseradar-8886e-default-rtdb.firebaseio.com/"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const DB_URL = "https://noiseradar-8886e-default-rtdb.firebaseio.com";
+    const STATUS_URL = DB_URL + "/current_status.json";
 
     const debugBox = document.getElementById("debugBox");
     const logBody = document.getElementById("logBody");
 
     let lastTimestamp = 0;
 
-    function setDebug(msg, isError = false) {
+    function setDebug(msg, isError) {
       debugBox.className = isError ? "debug-box err" : "debug-box ok";
       debugBox.innerText = msg;
       console.log(msg);
@@ -307,13 +282,13 @@
       const sound = data.sound || data.noise || data.noiseType || "-";
       const acc = data.accuracy ?? data.confidence ?? 0;
 
-      const newRow = document.createElement("tr");
-      newRow.innerHTML =
-        <td></td>
-         <td><b style="color:#00ffcc;">P</b></td>
-         <td> (%)</td>;
+      const row = document.createElement("tr");
+      row.innerHTML =
+        "<td>" + timeString + "</td>" +
+        "<td><b style='color:#79ffc2;'>P" + data.zone + "</b></td>" +
+        "<td>" + sound + " (" + acc + "%)</td>";
 
-      logBody.insertBefore(newRow, logBody.firstChild);
+      logBody.insertBefore(row, logBody.firstChild);
     }
 
     function renderStatus(data) {
@@ -323,9 +298,7 @@
         const zone = Number(data.zone);
         const zoneEl = document.getElementById("z" + zone);
 
-        if (zoneEl) {
-          zoneEl.classList.add("active");
-        }
+        if (zoneEl) zoneEl.classList.add("active");
 
         document.getElementById("resZone").innerText = "P" + zone;
         document.getElementById("resSound").innerText = data.sound || data.noise || data.noiseType || "-";
@@ -339,34 +312,30 @@
       }
     }
 
-    // 1순위: current_status 실시간 모니터링
-    db.ref("current_status").on("value", (snapshot) => {
-      const data = snapshot.val();
-      setDebug("current_status 수신: " + JSON.stringify(data));
-      renderStatus(data);
-    }, (error) => {
-      setDebug("current_status 읽기 실패: " + error.message, true);
-    });
+    async function pollStatus() {
+      try {
+        const res = await fetch(STATUS_URL + "?t=" + Date.now(), {
+          cache: "no-store"
+        });
 
-    // 2순위: status도 같이 감시. Python에서 둘 다 쓰기 때문에 보조용.
-    db.ref("status").on("value", (snapshot) => {
-      const data = snapshot.val();
-      console.log("status 수신:", data);
-      if (data && Number(data.zone) > 0) {
+        if (!res.ok) {
+          const txt = await res.text();
+          setDebug("Firebase REST 읽기 실패: HTTP " + res.status + " / " + txt, true);
+          return;
+        }
+
+        const data = await res.json();
+
+        setDebug("current_status 수신: " + JSON.stringify(data), false);
         renderStatus(data);
-      }
-    }, (error) => {
-      console.error("status 읽기 실패:", error);
-    });
 
-    // 누적 로그: Python이 logs에 push한 기록도 불러오기
-    db.ref("logs").limitToLast(50).on("child_added", (snapshot) => {
-      const data = snapshot.val();
-      console.log("log added:", data);
-      addLog(data);
-    }, (error) => {
-      console.error("logs 읽기 실패:", error);
-    });
+      } catch (err) {
+        setDebug("Firebase REST 연결 오류: " + err.message, true);
+      }
+    }
+
+    pollStatus();
+    setInterval(pollStatus, 1000);
   </script>
 </body>
 </html>
