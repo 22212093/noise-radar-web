@@ -1,128 +1,372 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚨 AI 층간소음 진원지 레이더 및 로그 시스템</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        h1 { color: #00ffcc; margin-bottom: 5px; font-size: 28px; letter-spacing: 1px; margin-top: 10px; text-align: center; }
-        p { color: #888; margin-bottom: 30px; font-size: 15px; text-align: center; }
-        
-        .main-container { display: flex; flex-direction: row; justify-content: center; align-items: flex-start; gap: 50px; max-width: 1000px; width: 100%; }
-        .left-panel { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 370px; }
-        
-        .grid-container { display: grid; grid-template-columns: repeat(3, 110px); grid-template-rows: repeat(2, 110px); gap: 20px; background-color: #1e1e1e; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); margin-bottom: 25px; justify-content: center; }
-        .zone { background-color: #2c2c2c; border: 2px solid #444; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #555; position: relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .node-marker { position: absolute; top: 6px; right: 6px; width: 14px; height: 14px; background-color: #0088ff; border-radius: 50%; box-shadow: 0 0 10px #0088ff; }
-        .active { background-color: #ff3333 !important; border-color: #ff6666 !important; color: white !important; box-shadow: 0 0 25px #ff3333; animation: pulse 0.8s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.04); } 100% { transform: scale(1); } }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🚨 AI 층간소음 진원지 레이더</title>
 
-        .result-box { width: 100%; padding: 20px 25px; background-color: #1e1e1e; border-left: 6px solid #00ffcc; border-radius: 8px; font-size: 16px; line-height: 1.6; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: none; box-sizing: border-box; }
-        .result-box span { color: #00ffcc; font-weight: bold; font-size: 20px; }
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-        .right-panel { width: 100%; max-width: 400px; background-color: #1e1e1e; border-radius: 12px; padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); box-sizing: border-box; }
-        .right-panel h2 { font-size: 18px; color: #00ffcc; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        
-        /* 🔥 새롭게 추가된 스크롤 컨테이너 영역 */
-        .table-wrapper {
-            max-height: 350px; /* 창 높이 고정 */
-            overflow-y: auto;  /* 넘어갈 경우 세로 스크롤 생성 */
-            padding-right: 5px;
-        }
-        
-        /* 간지나는 다크모드 스크롤바 디자인 */
-        .table-wrapper::-webkit-scrollbar { width: 6px; }
-        .table-wrapper::-webkit-scrollbar-track { background: #1e1e1e; }
-        .table-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        .table-wrapper::-webkit-scrollbar-thumb:hover { background: #666; }
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
 
-        .log-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        .log-table th { color: #888; font-weight: 600; padding-bottom: 10px; border-bottom: 2px solid #333; position: sticky; top: 0; background-color: #1e1e1e; z-index: 1; }
-        .log-table td { padding: 10px 0; border-bottom: 1px solid #222; color: #ccc; }
-        .log-table tr:first-child td { color: #ff6666; font-weight: bold; }
+    h1 {
+      color: #00ffcc;
+      margin-bottom: 5px;
+      font-size: 28px;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      text-align: center;
+    }
 
-        @media (max-width: 768px) {
-            .main-container { flex-direction: column; align-items: center; gap: 20px; }
-            .grid-container { grid-template-columns: repeat(3, 90px); grid-template-rows: repeat(2, 90px); padding: 20px; gap: 15px; }
-            .zone { font-size: 22px; }
-            .right-panel { max-width: 370px; }
-        }
-    </style>
+    p {
+      color: #888;
+      margin-bottom: 25px;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 50px;
+      max-width: 1050px;
+      width: 100%;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 390px;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, 110px);
+      grid-template-rows: repeat(2, 110px);
+      gap: 20px;
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      margin-bottom: 25px;
+      justify-content: center;
+    }
+
+    .zone {
+      background-color: #2c2c2c;
+      border: 2px solid #444;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: bold;
+      color: #555;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .node-marker {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 14px;
+      height: 14px;
+      background-color: #0088ff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #0088ff;
+    }
+
+    .active {
+      background-color: #ff3333 !important;
+      border-color: #ff6666 !important;
+      color: white !important;
+      box-shadow: 0 0 25px #ff3333;
+      animation: pulse 0.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+
+    .result-box {
+      width: 100%;
+      padding: 20px 25px;
+      background-color: #1e1e1e;
+      border-left: 6px solid #00ffcc;
+      border-radius: 8px;
+      font-size: 16px;
+      line-height: 1.6;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      display: none;
+      box-sizing: border-box;
+    }
+
+    .result-box span {
+      color: #00ffcc;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .right-panel {
+      width: 100%;
+      max-width: 430px;
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      box-sizing: border-box;
+    }
+
+    .right-panel h2 {
+      font-size: 18px;
+      color: #00ffcc;
+      margin-top: 0;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
+    }
+
+    .table-wrapper {
+      max-height: 350px;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .table-wrapper::-webkit-scrollbar { width: 6px; }
+    .table-wrapper::-webkit-scrollbar-track { background: #1e1e1e; }
+    .table-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    .table-wrapper::-webkit-scrollbar-thumb:hover { background: #666; }
+
+    .log-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .log-table th {
+      color: #888;
+      font-weight: 600;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #333;
+      position: sticky;
+      top: 0;
+      background-color: #1e1e1e;
+      z-index: 1;
+    }
+
+    .log-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+      color: #ccc;
+    }
+
+    .log-table tr:first-child td {
+      color: #ff6666;
+      font-weight: bold;
+    }
+
+    .debug-box {
+      width: 100%;
+      max-width: 850px;
+      margin-top: 20px;
+      padding: 12px 16px;
+      background: #181818;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #999;
+      font-size: 13px;
+      word-break: break-all;
+      box-sizing: border-box;
+    }
+
+    .ok { color: #00ffcc; }
+    .err { color: #ff6666; }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .grid-container {
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(2, 90px);
+        padding: 20px;
+        gap: 15px;
+      }
+
+      .zone { font-size: 22px; }
+      .right-panel { max-width: 390px; }
+    }
+  </style>
 </head>
+
 <body>
+  <h1>🚨 AI 층간소음 진원지 레이더</h1>
+  <p>150cm x 100cm 실시간 관제 및 로그 시스템</p>
 
-    <h1>🚨 AI 층간소음 진원지 레이더</h1>
-    <p>150cm x 100cm 실시간 관제 및 로그 시스템</p>
+  <div class="main-container">
+    <div class="left-panel">
+      <div class="grid-container">
+        <div id="z1" class="zone">P1<div class="node-marker"></div></div>
+        <div id="z2" class="zone">P2</div>
+        <div id="z3" class="zone">P3<div class="node-marker"></div></div>
+        <div id="z4" class="zone">P4<div class="node-marker"></div></div>
+        <div id="z5" class="zone">P5</div>
+        <div id="z6" class="zone">P6<div class="node-marker"></div></div>
+      </div>
 
-    <div class="main-container">
-        <div class="left-panel">
-            <div class="grid-container">
-                <div id="z1" class="zone">P1<div class="node-marker"></div></div>
-                <div id="z2" class="zone">P2</div>
-                <div id="z3" class="zone">P3<div class="node-marker"></div></div>
-                <div id="z4" class="zone">P4<div class="node-marker"></div></div>
-                <div id="z5" class="zone">P5</div>
-                <div id="z6" class="zone">P6<div class="node-marker"></div></div>
-            </div>
-
-            <div id="resultBox" class="result-box">
-                📍 진원지: <span id="resZone">P-</span> 구역<br>
-                🔊 소음원: <span id="resSound">대기 중</span><br>
-                🎯 정확도: <span id="resAcc">0</span>%
-            </div>
-        </div>
-
-        <div class="right-panel">
-            <h2>📋 누적 발생 이력 로그</h2>
-            <div class="table-wrapper">
-                <table class="log-table">
-                    <thead>
-                        <tr>
-                            <th width="30%">시간</th>
-                            <th width="20%">위치</th>
-                            <th width="50%">소음 종류</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logBody">
-                        </tbody>
-                </table>
-            </div>
-        </div>
+      <div id="resultBox" class="result-box">
+        📍 진원지: <span id="resZone">P-</span> 구역<br>
+        🔊 소음원: <span id="resSound">대기 중</span><br>
+        🎯 정확도: <span id="resAcc">0</span>%<br>
+        🧩 클래스: <span id="resClass">-</span>
+      </div>
     </div>
 
-    <script>
-        const firebaseConfig = { databaseURL: "https://noiseradar-8886e-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    <div class="right-panel">
+      <h2>📋 누적 발생 이력 로그</h2>
+      <div class="table-wrapper">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th width="30%">시간</th>
+              <th width="20%">위치</th>
+              <th width="50%">소음 종류</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-        db.ref('current_status').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data && data.zone > 0) {
-                for(let i=1; i<=6; i++) document.getElementById('z'+i).classList.remove('active');
-                document.getElementById('z' + data.zone).classList.add('active');
-                
-                document.getElementById('resZone').innerText = 'P' + data.zone;
-                document.getElementById('resSound').innerText = data.sound;
-                document.getElementById('resAcc').innerText = data.accuracy;
-                document.getElementById('resultBox').style.display = 'block';
+  <div id="debugBox" class="debug-box">Firebase 연결 대기 중...</div>
 
-                const logBody = document.getElementById('logBody');
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('ko-KR', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = <td></td><td><b style="color: #00ffcc;">P</b></td><td> (%)</td>;
-                
-                // 로그를 위에서부터 계속 누적 (삭제 로직 제거 완료!)
-                logBody.insertBefore(newRow, logBody.firstChild);
-            } else {
-                for(let i=1; i<=6; i++) document.getElementById('z'+i).classList.remove('active');
-                document.getElementById('resultBox').style.display = 'none';
-            }
-        });
-    </script>
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://noiseradar-8886e-default-rtdb.firebaseio.com/"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const debugBox = document.getElementById("debugBox");
+    const logBody = document.getElementById("logBody");
+
+    let lastTimestamp = 0;
+
+    function setDebug(msg, isError = false) {
+      debugBox.className = isError ? "debug-box err" : "debug-box ok";
+      debugBox.innerText = msg;
+      console.log(msg);
+    }
+
+    function clearZones() {
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById("z" + i).classList.remove("active");
+      }
+    }
+
+    function addLog(data) {
+      if (!data || Number(data.zone) <= 0) return;
+
+      const ts = Number(data.timestamp || Date.now());
+      if (ts === lastTimestamp) return;
+      lastTimestamp = ts;
+
+      const timeString = data.timeText || new Date().toLocaleTimeString("ko-KR", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+
+      const sound = data.sound || data.noise || data.noiseType || "-";
+      const acc = data.accuracy ?? data.confidence ?? 0;
+
+      const newRow = document.createElement("tr");
+      newRow.innerHTML =
+        <td></td>
+         <td><b style="color:#00ffcc;">P</b></td>
+         <td> (%)</td>;
+
+      logBody.insertBefore(newRow, logBody.firstChild);
+    }
+
+    function renderStatus(data) {
+      clearZones();
+
+      if (data && Number(data.zone) > 0) {
+        const zone = Number(data.zone);
+        const zoneEl = document.getElementById("z" + zone);
+
+        if (zoneEl) {
+          zoneEl.classList.add("active");
+        }
+
+        document.getElementById("resZone").innerText = "P" + zone;
+        document.getElementById("resSound").innerText = data.sound || data.noise || data.noiseType || "-";
+        document.getElementById("resAcc").innerText = data.accuracy ?? data.confidence ?? 0;
+        document.getElementById("resClass").innerText = data.class_id || data.label || "-";
+        document.getElementById("resultBox").style.display = "block";
+
+        addLog(data);
+      } else {
+        document.getElementById("resultBox").style.display = "none";
+      }
+    }
+
+    // 1순위: current_status 실시간 모니터링
+    db.ref("current_status").on("value", (snapshot) => {
+      const data = snapshot.val();
+      setDebug("current_status 수신: " + JSON.stringify(data));
+      renderStatus(data);
+    }, (error) => {
+      setDebug("current_status 읽기 실패: " + error.message, true);
+    });
+
+    // 2순위: status도 같이 감시. Python에서 둘 다 쓰기 때문에 보조용.
+    db.ref("status").on("value", (snapshot) => {
+      const data = snapshot.val();
+      console.log("status 수신:", data);
+      if (data && Number(data.zone) > 0) {
+        renderStatus(data);
+      }
+    }, (error) => {
+      console.error("status 읽기 실패:", error);
+    });
+
+    // 누적 로그: Python이 logs에 push한 기록도 불러오기
+    db.ref("logs").limitToLast(50).on("child_added", (snapshot) => {
+      const data = snapshot.val();
+      console.log("log added:", data);
+      addLog(data);
+    }, (error) => {
+      console.error("logs 읽기 실패:", error);
+    });
+  </script>
 </body>
 </html>
