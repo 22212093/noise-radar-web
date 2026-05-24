@@ -109,7 +109,7 @@
       border-left: 6px solid #79ffc2;
       font-size: 18px;
       line-height: 1.8;
-      display: none;
+      display: block;
     }
 
     .result-box span {
@@ -118,23 +118,30 @@
       font-size: 22px;
     }
 
-    .email-box input {
-      width: 68%;
+    .standby span {
+      color: #888 !important;
+    }
+
+    .email-box textarea {
+      width: 96%;
+      height: 85px;
       padding: 12px;
       border: none;
       border-radius: 8px;
       margin-top: 10px;
       font-size: 15px;
+      resize: vertical;
+      box-sizing: border-box;
     }
 
     .email-box button {
-      padding: 12px 16px;
+      padding: 12px 18px;
       border: none;
       border-radius: 8px;
       background: #79ffc2;
       font-weight: bold;
       cursor: pointer;
-      margin-left: 6px;
+      margin-top: 10px;
     }
 
     .email-status {
@@ -142,6 +149,7 @@
       color: #aaa;
       font-size: 14px;
       word-break: break-all;
+      line-height: 1.5;
     }
 
     .right-panel h2 {
@@ -153,7 +161,7 @@
     }
 
     .table-wrapper {
-      max-height: 310px;
+      max-height: 230px;
       overflow-y: auto;
       padding-right: 5px;
     }
@@ -181,7 +189,7 @@
     }
 
     .log-table td {
-      padding: 11px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #2a2a2a;
       color: #ccc;
     }
@@ -219,22 +227,27 @@
       <div id="z6" class="zone">P6<div class="node-marker"></div></div>
     </div>
 
-    <div id="resultBox" class="card result-box">
-      📍 진원지: <span id="resZone">P-</span> 구역<br>
-      🔊 소음원: <span id="resSound">대기 중</span><br>
+    <div id="resultBox" class="card result-box standby">
+      📍 진원지: <span id="resZone">대기중</span><br>
+      🔊 소음원: <span id="resSound">대기중</span><br>
       🎯 정확도: <span id="resAcc">0</span>%<br>
-      🧩 클래스: <span id="resClass">-</span>
+      🧩 클래스: <span id="resClass">STANDBY</span>
     </div>
 
     <div class="card email-box">
-      <b>📧 알림 받을 이메일</b><br>
-      <input id="emailInput" type="email" placeholder="example@gmail.com" />
-      <button onclick="saveEmail()">저장</button>
+      <b>📧 알림 받을 이메일 여러 명 입력</b><br>
+      <textarea id="emailInput" placeholder="a@gmail.com
+b@gmail.com
+c@gmail.com
+
+또는 a@gmail.com, b@gmail.com"></textarea>
+      <br>
+      <button onclick="saveEmails()">저장</button>
       <div id="emailStatus" class="email-status">이메일 설정 확인 중...</div>
     </div>
 
     <div class="card right-panel">
-      <h2>📋 누적 발생 이력 로그</h2>
+      <h2>📋 최근 발생 이력 로그</h2>
       <div class="table-wrapper">
         <table class="log-table">
           <thead>
@@ -257,10 +270,15 @@
     const STATUS_URL = DB_URL + "/current_status.json";
     const EMAIL_URL = DB_URL + "/settings/email_to.json";
 
+    const ACTIVE_HOLD_MS = 8000;
+    const MAX_LOG_ROWS = 10;
+
     const debugBox = document.getElementById("debugBox");
     const logBody = document.getElementById("logBody");
+    const resultBox = document.getElementById("resultBox");
 
     let lastTimestamp = 0;
+    let lastActiveData = null;
 
     function setDebug(msg, isError) {
       debugBox.className = isError ? "debug-box err" : "debug-box ok";
@@ -274,29 +292,48 @@
       }
     }
 
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    function setStandby() {
+      clearZones();
+      resultBox.classList.add("standby");
+      document.getElementById("resZone").innerText = "대기중";
+      document.getElementById("resSound").innerText = "대기중";
+      document.getElementById("resAcc").innerText = "0";
+      document.getElementById("resClass").innerText = "STANDBY";
     }
 
-    async function saveEmail() {
-      const email = document.getElementById("emailInput").value.trim();
+    function parseEmails(text) {
+      const raw = String(text || "");
+      const parts = raw.split(/[\n,;]/);
+      const emails = [];
 
-      if (!isValidEmail(email)) {
-        document.getElementById("emailStatus").innerText = "이메일 형식이 잘못됨";
+      for (const p of parts) {
+        const e = p.trim();
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) {
+          if (!emails.includes(e)) emails.push(e);
+        }
+      }
+
+      return emails;
+    }
+
+    async function saveEmails() {
+      const raw = document.getElementById("emailInput").value;
+      const emails = parseEmails(raw);
+
+      if (emails.length === 0) {
+        document.getElementById("emailStatus").innerText = "이메일을 1개 이상 올바르게 입력";
         return;
       }
 
       try {
         const payload = {
-          email: email,
+          emails: emails,
           updatedAt: Date.now()
         };
 
         const res = await fetch(EMAIL_URL, {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: {"Content-Type": "application/json"},
           body: JSON.stringify(payload)
         });
 
@@ -306,13 +343,14 @@
           return;
         }
 
-        document.getElementById("emailStatus").innerText = "저장됨: " + email;
+        document.getElementById("emailStatus").innerText =
+          "저장됨 (" + emails.length + "명): " + emails.join(", ");
       } catch (err) {
         document.getElementById("emailStatus").innerText = "저장 오류: " + err.message;
       }
     }
 
-    async function loadEmail() {
+    async function loadEmails() {
       try {
         const res = await fetch(EMAIL_URL + "?t=" + Date.now(), { cache: "no-store" });
 
@@ -323,9 +361,14 @@
 
         const data = await res.json();
 
-        if (data && data.email) {
+        if (data && Array.isArray(data.emails)) {
+          document.getElementById("emailInput").value = data.emails.join("\n");
+          document.getElementById("emailStatus").innerText =
+            "현재 수신 이메일 (" + data.emails.length + "명): " + data.emails.join(", ");
+        } else if (data && data.email) {
           document.getElementById("emailInput").value = data.email;
-          document.getElementById("emailStatus").innerText = "현재 수신 이메일: " + data.email;
+          document.getElementById("emailStatus").innerText =
+            "현재 수신 이메일: " + data.email;
         } else {
           document.getElementById("emailStatus").innerText = "이메일 미설정";
         }
@@ -358,27 +401,43 @@
         "<td>" + sound + " (" + acc + "%)</td>";
 
       logBody.insertBefore(row, logBody.firstChild);
+
+      while (logBody.children.length > MAX_LOG_ROWS) {
+        logBody.removeChild(logBody.lastChild);
+      }
+    }
+
+    function isRecent(data) {
+      if (!data || Number(data.zone) <= 0) return false;
+      const ts = Number(data.timestamp || 0) * 1000;
+      if (!ts) return false;
+      return Date.now() - ts <= ACTIVE_HOLD_MS;
     }
 
     function renderStatus(data) {
+      if (data && Number(data.zone) > 0) {
+        addLog(data);
+      }
+
+      if (!isRecent(data)) {
+        setStandby();
+        return;
+      }
+
+      lastActiveData = data;
+
       clearZones();
 
-      if (data && Number(data.zone) > 0) {
-        const zone = Number(data.zone);
-        const zoneEl = document.getElementById("z" + zone);
+      const zone = Number(data.zone);
+      const zoneEl = document.getElementById("z" + zone);
 
-        if (zoneEl) zoneEl.classList.add("active");
+      if (zoneEl) zoneEl.classList.add("active");
 
-        document.getElementById("resZone").innerText = "P" + zone;
-        document.getElementById("resSound").innerText = data.sound || data.noise || data.noiseType || "-";
-        document.getElementById("resAcc").innerText = data.accuracy ?? data.confidence ?? 0;
-        document.getElementById("resClass").innerText = data.class_id || data.label || "-";
-        document.getElementById("resultBox").style.display = "block";
-
-        addLog(data);
-      } else {
-        document.getElementById("resultBox").style.display = "none";
-      }
+      resultBox.classList.remove("standby");
+      document.getElementById("resZone").innerText = "P" + zone;
+      document.getElementById("resSound").innerText = data.sound || data.noise || data.noiseType || "-";
+      document.getElementById("resAcc").innerText = data.accuracy ?? data.confidence ?? 0;
+      document.getElementById("resClass").innerText = data.class_id || data.label || "-";
     }
 
     async function pollStatus() {
@@ -394,7 +453,6 @@
         }
 
         const data = await res.json();
-
         setDebug("current_status 수신: " + JSON.stringify(data), false);
         renderStatus(data);
       } catch (err) {
@@ -402,9 +460,15 @@
       }
     }
 
-    loadEmail();
+    loadEmails();
     pollStatus();
     setInterval(pollStatus, 1000);
+
+    setInterval(() => {
+      if (lastActiveData && !isRecent(lastActiveData)) {
+        setStandby();
+      }
+    }, 500);
   </script>
 </body>
 </html>
