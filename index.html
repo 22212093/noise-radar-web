@@ -30,7 +30,7 @@
 
     p {
       color: #999;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       font-size: 16px;
       text-align: center;
     }
@@ -52,7 +52,7 @@
       padding: 30px;
       border-radius: 22px;
       box-shadow: 0 18px 40px rgba(0,0,0,0.65);
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .zone {
@@ -94,19 +94,22 @@
       100% { transform: scale(1); }
     }
 
-    .result-box {
+    .card {
       width: 100%;
-      max-width: 460px;
-      padding: 24px 28px;
+      max-width: 520px;
+      padding: 22px;
       background-color: #1f1f1f;
+      border-radius: 12px;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+      box-sizing: border-box;
+      margin-bottom: 18px;
+    }
+
+    .result-box {
       border-left: 6px solid #79ffc2;
-      border-radius: 10px;
       font-size: 18px;
       line-height: 1.8;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
       display: none;
-      box-sizing: border-box;
-      margin-bottom: 25px;
     }
 
     .result-box span {
@@ -115,14 +118,30 @@
       font-size: 22px;
     }
 
-    .right-panel {
-      width: 100%;
-      max-width: 520px;
-      background-color: #1f1f1f;
-      border-radius: 12px;
-      padding: 22px;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
-      box-sizing: border-box;
+    .email-box input {
+      width: 68%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .email-box button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #79ffc2;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+
+    .email-status {
+      margin-top: 10px;
+      color: #aaa;
+      font-size: 14px;
+      word-break: break-all;
     }
 
     .right-panel h2 {
@@ -142,7 +161,6 @@
     .table-wrapper::-webkit-scrollbar { width: 6px; }
     .table-wrapper::-webkit-scrollbar-track { background: #1e1e1e; }
     .table-wrapper::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-    .table-wrapper::-webkit-scrollbar-thumb:hover { background: #666; }
 
     .log-table {
       width: 100%;
@@ -168,15 +186,10 @@
       color: #ccc;
     }
 
-    .log-table tr:first-child td {
-      color: #ff7777;
-      font-weight: bold;
-    }
-
     .debug-box {
       width: 100%;
       max-width: 720px;
-      margin-top: 26px;
+      margin-top: 10px;
       padding: 14px 18px;
       background: #181818;
       border: 1px solid #333;
@@ -189,18 +202,6 @@
 
     .ok { color: #79ffc2; }
     .err { color: #ff7777; }
-
-    @media (max-width: 768px) {
-      h1 { font-size: 30px; }
-      .grid-container {
-        grid-template-columns: repeat(3, 90px);
-        grid-template-rows: repeat(2, 90px);
-        padding: 22px;
-        gap: 16px;
-      }
-      .zone { font-size: 22px; }
-      .result-box, .right-panel { max-width: 465px; }
-    }
   </style>
 </head>
 
@@ -218,14 +219,21 @@
       <div id="z6" class="zone">P6<div class="node-marker"></div></div>
     </div>
 
-    <div id="resultBox" class="result-box">
+    <div id="resultBox" class="card result-box">
       📍 진원지: <span id="resZone">P-</span> 구역<br>
       🔊 소음원: <span id="resSound">대기 중</span><br>
       🎯 정확도: <span id="resAcc">0</span>%<br>
       🧩 클래스: <span id="resClass">-</span>
     </div>
 
-    <div class="right-panel">
+    <div class="card email-box">
+      <b>📧 알림 받을 이메일</b><br>
+      <input id="emailInput" type="email" placeholder="example@gmail.com" />
+      <button onclick="saveEmail()">저장</button>
+      <div id="emailStatus" class="email-status">이메일 설정 확인 중...</div>
+    </div>
+
+    <div class="card right-panel">
       <h2>📋 누적 발생 이력 로그</h2>
       <div class="table-wrapper">
         <table class="log-table">
@@ -247,6 +255,7 @@
   <script>
     const DB_URL = "https://noiseradar-8886e-default-rtdb.firebaseio.com";
     const STATUS_URL = DB_URL + "/current_status.json";
+    const EMAIL_URL = DB_URL + "/settings/email_to.json";
 
     const debugBox = document.getElementById("debugBox");
     const logBody = document.getElementById("logBody");
@@ -262,6 +271,66 @@
     function clearZones() {
       for (let i = 1; i <= 6; i++) {
         document.getElementById("z" + i).classList.remove("active");
+      }
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    async function saveEmail() {
+      const email = document.getElementById("emailInput").value.trim();
+
+      if (!isValidEmail(email)) {
+        document.getElementById("emailStatus").innerText = "이메일 형식이 잘못됨";
+        return;
+      }
+
+      try {
+        const payload = {
+          email: email,
+          updatedAt: Date.now()
+        };
+
+        const res = await fetch(EMAIL_URL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const txt = await res.text();
+          document.getElementById("emailStatus").innerText = "저장 실패: " + txt;
+          return;
+        }
+
+        document.getElementById("emailStatus").innerText = "저장됨: " + email;
+      } catch (err) {
+        document.getElementById("emailStatus").innerText = "저장 오류: " + err.message;
+      }
+    }
+
+    async function loadEmail() {
+      try {
+        const res = await fetch(EMAIL_URL + "?t=" + Date.now(), { cache: "no-store" });
+
+        if (!res.ok) {
+          document.getElementById("emailStatus").innerText = "이메일 설정 읽기 실패";
+          return;
+        }
+
+        const data = await res.json();
+
+        if (data && data.email) {
+          document.getElementById("emailInput").value = data.email;
+          document.getElementById("emailStatus").innerText = "현재 수신 이메일: " + data.email;
+        } else {
+          document.getElementById("emailStatus").innerText = "이메일 미설정";
+        }
+      } catch (err) {
+        document.getElementById("emailStatus").innerText = "이메일 설정 오류: " + err.message;
       }
     }
 
@@ -328,12 +397,12 @@
 
         setDebug("current_status 수신: " + JSON.stringify(data), false);
         renderStatus(data);
-
       } catch (err) {
         setDebug("Firebase REST 연결 오류: " + err.message, true);
       }
     }
 
+    loadEmail();
     pollStatus();
     setInterval(pollStatus, 1000);
   </script>
