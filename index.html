@@ -567,7 +567,18 @@ c@gmail.com
       }
     }
 
-    function activateZone(zone) {
+    function activateZone(zone, label) {
+      const lbl = String(label || "");
+      const mergeLabel = (lbl === "Footstep" || lbl === "Piano" || lbl === "발걸음" || lbl === "발걸음소리" || lbl === "피아노" || lbl === "피아노소리");
+
+      if (mergeLabel && (zone === 2 || zone === 5)) {
+        const z2 = document.getElementById("rz2");
+        const z5 = document.getElementById("rz5");
+        if (z2) z2.classList.add("active");
+        if (z5) z5.classList.add("active");
+        return;
+      }
+
       const roomZoneEl = document.getElementById("rz" + zone);
       if (roomZoneEl) roomZoneEl.classList.add("active");
     }
@@ -737,7 +748,8 @@ c@gmail.com
       clearZones();
 
       const zone = Number(data.zone);
-      activateZone(zone);
+      const labelForZone = data.class_id || data.label || data.sound || data.noise || data.noiseType || "";
+      activateZone(zone, labelForZone);
 
       resultBox.classList.remove("standby");
       document.getElementById("resZone").innerText = "P" + zone;
