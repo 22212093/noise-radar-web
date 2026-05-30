@@ -459,7 +459,7 @@
     .right-panel {
       min-height: 0;
       display: grid;
-      grid-template-rows: auto auto minmax(240px, 1fr);
+      grid-template-rows: auto auto minmax(260px, 1fr);
       gap: 14px;
     }
 
@@ -474,11 +474,12 @@
     }
 
     .result-box {
-      overflow: hidden;
+      overflow: visible;
+      min-height: 150px;
     }
 
     .result-box .panel-header {
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .result-box .status-tag {
@@ -502,13 +503,14 @@
 
     .result-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
     }
 
     .metric {
       position: relative;
-      padding: 15px 16px;
+      padding: 13px 12px;
+      min-height: 88px;
       border-radius: 12px;
       background: var(--panel-soft);
       border: 1px solid var(--line);
@@ -520,22 +522,26 @@
       align-items: center;
       gap: 6px;
       font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.7px;
+      font-size: 10.5px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 9px;
+      margin-bottom: 8px;
       line-height: 1.25;
+      white-space: nowrap;
     }
 
     .metric .m-value {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 800;
       font-family: var(--mono);
       letter-spacing: -0.5px;
       line-height: 1.05;
       color: var(--accent);
       transition: color 0.25s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .result-box:not(.standby) .metric .m-value {
@@ -547,7 +553,7 @@
     }
 
     .metric .m-value.small {
-      font-size: 21px;
+      font-size: 18px;
       line-height: 1.15;
     }
 
@@ -636,7 +642,7 @@
 
     .history-panel {
       padding: 17px 19px;
-      min-height: 240px;
+      min-height: 260px;
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
     }
@@ -646,7 +652,7 @@
     }
 
     .table-wrapper {
-      min-height: 170px;
+      min-height: 190px;
       overflow-y: auto;
       margin: 0 -4px;
       padding: 0 4px;
@@ -812,6 +818,11 @@
 
       .result-grid {
         grid-template-columns: 1fr 1fr;
+      }
+
+      .metric {
+        min-height: 96px;
+        padding: 14px 15px;
       }
 
       .metric .m-label {
