@@ -13,22 +13,21 @@
     * { box-sizing: border-box; }
 
     :root {
-      --bg-0:        #07090d;
-      --bg-1:        #0b0f15;
-      --panel:       rgba(17, 23, 32, 0.72);
+      --bg-0: #07090d;
+      --bg-1: #0b0f15;
+      --panel: rgba(17, 23, 32, 0.72);
       --panel-solid: #11161f;
-      --panel-soft:  rgba(26, 34, 46, 0.6);
-      --line:        rgba(120, 140, 165, 0.14);
+      --panel-soft: rgba(26, 34, 46, 0.6);
+      --line: rgba(120, 140, 165, 0.14);
       --line-strong: rgba(120, 140, 165, 0.28);
-      --text:        #e8edf4;
-      --muted:       #76828f;
-      --muted-2:     #57636f;
-      --accent:      #36e0a4;
-      --accent-dim:  #1f8d68;
-      --red:         #ff5165;
-      --amber:       #ffc24b;
-      --blue:        #5b9bff;
-      --grid-glow:   rgba(54, 224, 164, 0.5);
+      --text: #e8edf4;
+      --muted: #76828f;
+      --muted-2: #57636f;
+      --accent: #36e0a4;
+      --accent-dim: #1f8d68;
+      --red: #ff5165;
+      --amber: #ffc24b;
+      --blue: #5b9bff;
       --mono: 'JetBrains Mono', ui-monospace, monospace;
       --sans: 'Inter Tight', system-ui, sans-serif;
     }
@@ -460,7 +459,7 @@
     .right-panel {
       min-height: 0;
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(240px, 1fr);
       gap: 14px;
     }
 
@@ -637,7 +636,7 @@
 
     .history-panel {
       padding: 17px 19px;
-      min-height: 0;
+      min-height: 240px;
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
     }
@@ -647,40 +646,41 @@
     }
 
     .table-wrapper {
-      min-height: 0;
+      min-height: 170px;
       overflow-y: auto;
       margin: 0 -4px;
       padding: 0 4px;
     }
 
     .table-wrapper::-webkit-scrollbar {
-      width: 6px;
+      width: 8px;
     }
 
     .table-wrapper::-webkit-scrollbar-track {
-      background: transparent;
+      background: rgba(255,255,255,0.03);
+      border-radius: 4px;
     }
 
     .table-wrapper::-webkit-scrollbar-thumb {
-      background: var(--line-strong);
-      border-radius: 3px;
+      background: rgba(120, 140, 165, 0.42);
+      border-radius: 4px;
     }
 
     .log-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.5px;
       text-align: left;
+      table-layout: fixed;
     }
 
     .log-table th {
-      color: var(--muted-2);
-      font-weight: 700;
+      color: #9aa6b3;
+      font-weight: 800;
       font-family: var(--mono);
-      font-size: 10.5px;
-      letter-spacing: 1px;
+      font-size: 12px;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
-      padding: 10px 8px;
+      padding: 11px 10px;
       border-bottom: 1px solid var(--line-strong);
       position: sticky;
       top: 0;
@@ -689,11 +689,15 @@
     }
 
     .log-table td {
-      padding: 12px 8px;
+      padding: 13px 10px;
       border-bottom: 1px solid var(--line);
       color: var(--text);
       font-family: var(--mono);
-      font-size: 13px;
+      font-size: 14px;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .log-table tbody tr {
@@ -701,7 +705,7 @@
     }
 
     .log-table tbody tr:hover {
-      background: rgba(255,255,255,0.025);
+      background: rgba(255,255,255,0.035);
     }
 
     .debug-bottom {
@@ -766,13 +770,8 @@
       box-shadow: 0 0 8px var(--red);
     }
 
-    .ok {
-      color: var(--text);
-    }
-
-    .err {
-      color: #ffb3bc;
-    }
+    .ok { color: var(--text); }
+    .err { color: #ffb3bc; }
 
     @media (max-width: 900px) {
       body {
@@ -797,21 +796,7 @@
       }
 
       .header-right {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .stat-chip {
-        align-items: center;
-        min-width: 100px;
-        text-align: center;
-      }
-
-      .live-badge {
-        min-width: 92px;
-        justify-content: center;
+        display: none;
       }
 
       .main-container {
@@ -822,6 +807,7 @@
 
       .right-panel {
         gap: 14px;
+        grid-template-rows: auto auto auto;
       }
 
       .result-grid {
@@ -842,6 +828,11 @@
 
       .history-panel {
         max-height: 320px;
+        min-height: 240px;
+      }
+
+      .table-wrapper {
+        min-height: 170px;
       }
 
       .debug-bottom {
@@ -895,6 +886,16 @@
 
       .room-cell.has-node::before {
         display: none;
+      }
+
+      .log-table th {
+        font-size: 10.5px;
+        padding: 9px 7px;
+      }
+
+      .log-table td {
+        font-size: 12.5px;
+        padding: 10px 7px;
       }
     }
   </style>
