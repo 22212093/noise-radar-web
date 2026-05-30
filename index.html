@@ -36,16 +36,16 @@
     body {
       height: 100vh;
       overflow: hidden;
-      padding: 12px;
+      padding: 10px 14px;
     }
 
     .page {
-      width: min(1180px, 100%);
+      width: min(1340px, 100%);
       height: 100%;
       margin: 0 auto;
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto;
-      gap: 12px;
+      gap: 10px;
     }
 
     header {
@@ -69,7 +69,7 @@
     .main-container {
       min-height: 0;
       display: grid;
-      grid-template-columns: minmax(420px, 510px) minmax(0, 1fr);
+      grid-template-columns: minmax(590px, 48%) minmax(520px, 1fr);
       gap: 14px;
       align-items: stretch;
     }
@@ -83,7 +83,7 @@
     }
 
     .left-panel {
-      padding: 14px;
+      padding: 14px 16px 16px;
       min-height: 0;
       display: flex;
       flex-direction: column;
@@ -128,7 +128,7 @@
     .room-dim {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.18);
+      background: rgba(0, 0, 0, 0.16);
       pointer-events: none;
     }
 
@@ -147,7 +147,7 @@
       color: white;
       font-weight: 900;
       font-size: 18px;
-      padding: 12px;
+      padding: 12px 14px;
       text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95);
       transition: 0.18s ease;
     }
@@ -317,19 +317,25 @@
 
     .debug-bottom {
       width: 100%;
-      min-height: 52px;
-      max-height: 92px;
-      padding: 12px 16px;
+      min-height: 58px;
+      max-height: 96px;
+      padding: 10px 16px;
       background: rgba(21, 26, 31, 0.98);
       border: 1px solid #333d47;
       border-radius: 14px;
       box-shadow: var(--shadow);
       color: #9ba4ad;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.45;
       word-break: break-all;
       overflow: auto;
       white-space: pre-wrap;
+    }
+
+    .debug-title {
+      color: var(--green);
+      font-weight: 900;
+      margin-right: 6px;
     }
 
     .ok {
@@ -515,7 +521,9 @@ c@gmail.com
       </section>
     </main>
 
-    <div id="debugBox" class="debug-bottom">Firebase REST 연결 대기 중...</div>
+    <div id="debugBox" class="debug-bottom">
+      <span class="debug-title">Firebase 원본 수신 데이터:</span> 연결 대기 중...
+    </div>
   </div>
 
   <script>
@@ -536,7 +544,7 @@ c@gmail.com
 
     function setDebug(msg, isError) {
       debugBox.className = isError ? "debug-bottom err" : "debug-bottom ok";
-      debugBox.innerText = msg;
+      debugBox.innerHTML = '<span class="debug-title">Firebase 원본 수신 데이터:</span> ' + msg;
       console.log(msg);
     }
 
@@ -732,15 +740,15 @@ c@gmail.com
 
         if (!res.ok) {
           const txt = await res.text();
-          setDebug("Firebase REST 읽기 실패: HTTP " + res.status + " / " + txt, true);
+          setDebug("읽기 실패: HTTP " + res.status + " / " + txt, true);
           return;
         }
 
         const data = await res.json();
-        setDebug("current_status 수신: " + JSON.stringify(data), false);
+        setDebug(JSON.stringify(data), false);
         renderStatus(data);
       } catch (err) {
-        setDebug("Firebase REST 연결 오류: " + err.message, true);
+        setDebug("연결 오류: " + err.message, true);
       }
     }
 
