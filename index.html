@@ -475,19 +475,33 @@
 
     .result-box {
       overflow: visible;
-      min-height: 150px;
+      min-height: 180px;
+      padding: 20px 22px;
     }
 
     .result-box .panel-header {
-      margin-bottom: 10px;
+      margin-bottom: 14px;
+    }
+
+    .result-box .panel-header .title {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .result-box .panel-header .title .ico {
+      width: 30px;
+      height: 30px;
+      font-size: 18px;
+      border-radius: 9px;
     }
 
     .result-box .status-tag {
       font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      padding: 5px 14px;
       border-radius: 20px;
       border: 1px solid var(--line-strong);
       color: var(--muted);
@@ -504,14 +518,14 @@
     .result-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
     }
 
     .metric {
       position: relative;
-      padding: 13px 12px;
-      min-height: 88px;
-      border-radius: 12px;
+      padding: 17px 14px;
+      min-height: 108px;
+      border-radius: 13px;
       background: var(--panel-soft);
       border: 1px solid var(--line);
       overflow: hidden;
@@ -522,17 +536,17 @@
       align-items: center;
       gap: 6px;
       font-family: var(--mono);
-      font-size: 10.5px;
+      font-size: 13px;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       line-height: 1.25;
       white-space: nowrap;
     }
 
     .metric .m-value {
-      font-size: 24px;
+      font-size: 31px;
       font-weight: 800;
       font-family: var(--mono);
       letter-spacing: -0.5px;
@@ -553,7 +567,7 @@
     }
 
     .metric .m-value.small {
-      font-size: 18px;
+      font-size: 24px;
       line-height: 1.15;
     }
 
@@ -563,7 +577,7 @@
       left: 0;
       top: 0;
       bottom: 0;
-      width: 3px;
+      width: 4px;
       background: var(--accent-dim);
       opacity: 0.6;
     }
@@ -574,7 +588,25 @@
     }
 
     .email-box .panel-header {
-      margin-bottom: 11px;
+      margin-bottom: 10px;
+    }
+
+    .email-box .panel-header .title {
+      font-size: 13px;
+      font-weight: 700;
+      gap: 7px;
+    }
+
+    .email-box .panel-header .title .ico {
+      width: 21px;
+      height: 21px;
+      font-size: 13px;
+      border-radius: 7px;
+    }
+
+    .email-box .panel-header .meta {
+      font-size: 9.5px;
+      letter-spacing: 1.4px;
     }
 
     .email-box textarea {
@@ -816,25 +848,44 @@
         grid-template-rows: auto auto auto;
       }
 
+      .result-box {
+        min-height: unset;
+        padding: 17px 19px;
+      }
+
+      .result-box .panel-header .title {
+        font-size: 18px;
+      }
+
+      .result-box .panel-header .title .ico {
+        width: 27px;
+        height: 27px;
+        font-size: 16px;
+      }
+
+      .result-box .status-tag {
+        font-size: 12px;
+      }
+
       .result-grid {
         grid-template-columns: 1fr 1fr;
       }
 
       .metric {
-        min-height: 96px;
-        padding: 14px 15px;
+        min-height: 100px;
+        padding: 15px;
       }
 
       .metric .m-label {
-        font-size: 11.5px;
+        font-size: 12px;
       }
 
       .metric .m-value {
-        font-size: 27px;
+        font-size: 28px;
       }
 
       .metric .m-value.small {
-        font-size: 21px;
+        font-size: 22px;
       }
 
       .history-panel {
@@ -866,19 +917,19 @@
       }
 
       .metric {
-        padding: 14px 15px;
+        padding: 15px;
       }
 
       .metric .m-label {
-        font-size: 11.5px;
+        font-size: 12px;
       }
 
       .metric .m-value {
-        font-size: 26px;
+        font-size: 28px;
       }
 
       .metric .m-value.small {
-        font-size: 21px;
+        font-size: 23px;
       }
 
       .email-actions {
