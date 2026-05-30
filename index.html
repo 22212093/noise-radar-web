@@ -76,7 +76,6 @@
       gap: 12px;
     }
 
-    /* ===== HEADER ===== */
     header {
       display: flex;
       align-items: center;
@@ -211,7 +210,6 @@
       50% { opacity: 0.25; }
     }
 
-    /* ===== LAYOUT ===== */
     .main-container {
       min-height: 0;
       display: grid;
@@ -297,7 +295,6 @@
       text-transform: uppercase;
     }
 
-    /* ===== ROOM MAP ===== */
     .room-panel {
       position: relative;
       width: 100%;
@@ -460,7 +457,6 @@
       box-shadow: 0 0 8px var(--red);
     }
 
-    /* ===== RIGHT COLUMN ===== */
     .right-panel {
       min-height: 0;
       display: grid;
@@ -513,7 +509,7 @@
 
     .metric {
       position: relative;
-      padding: 14px 15px;
+      padding: 15px 16px;
       border-radius: 12px;
       background: var(--panel-soft);
       border: 1px solid var(--line);
@@ -525,19 +521,20 @@
       align-items: center;
       gap: 6px;
       font-family: var(--mono);
-      font-size: 10.5px;
-      letter-spacing: 1px;
+      font-size: 12px;
+      letter-spacing: 0.7px;
       text-transform: uppercase;
-      color: var(--muted-2);
-      margin-bottom: 8px;
+      color: var(--muted);
+      margin-bottom: 9px;
+      line-height: 1.25;
     }
 
     .metric .m-value {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 800;
       font-family: var(--mono);
       letter-spacing: -0.5px;
-      line-height: 1;
+      line-height: 1.05;
       color: var(--accent);
       transition: color 0.25s ease;
     }
@@ -551,7 +548,8 @@
     }
 
     .metric .m-value.small {
-      font-size: 18px;
+      font-size: 21px;
+      line-height: 1.15;
     }
 
     .metric::before {
@@ -570,7 +568,6 @@
       opacity: 0.85;
     }
 
-    /* EMAIL card */
     .email-box .panel-header {
       margin-bottom: 11px;
     }
@@ -638,7 +635,6 @@
       word-break: break-all;
     }
 
-    /* HISTORY card */
     .history-panel {
       padding: 17px 19px;
       min-height: 0;
@@ -708,7 +704,6 @@
       background: rgba(255,255,255,0.025);
     }
 
-    /* ===== DEBUG FOOTER ===== */
     .debug-bottom {
       width: 100%;
       min-height: 52px;
@@ -779,7 +774,6 @@
       color: #ffb3bc;
     }
 
-    /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
       body {
         height: auto;
@@ -798,10 +792,26 @@
         padding: 8px 0 14px;
       }
 
+      .brand {
+        width: 100%;
+      }
+
       .header-right {
         width: 100%;
-        justify-content: flex-start;
+        justify-content: center;
         flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .stat-chip {
+        align-items: center;
+        min-width: 100px;
+        text-align: center;
+      }
+
+      .live-badge {
+        min-width: 92px;
+        justify-content: center;
       }
 
       .main-container {
@@ -816,6 +826,18 @@
 
       .result-grid {
         grid-template-columns: 1fr 1fr;
+      }
+
+      .metric .m-label {
+        font-size: 11.5px;
+      }
+
+      .metric .m-value {
+        font-size: 27px;
+      }
+
+      .metric .m-value.small {
+        font-size: 21px;
       }
 
       .history-panel {
@@ -833,8 +855,28 @@
         font-size: 15px;
       }
 
+      .brand-text .subtitle {
+        font-size: 11px;
+      }
+
       .result-grid {
         grid-template-columns: 1fr;
+      }
+
+      .metric {
+        padding: 14px 15px;
+      }
+
+      .metric .m-label {
+        font-size: 11.5px;
+      }
+
+      .metric .m-value {
+        font-size: 26px;
+      }
+
+      .metric .m-value.small {
+        font-size: 21px;
       }
 
       .email-actions {
@@ -860,7 +902,6 @@
 
 <body>
   <div class="page">
-    <!-- ===== HEADER ===== -->
     <header>
       <div class="brand">
         <div class="brand-mark">
@@ -887,9 +928,7 @@
       </div>
     </header>
 
-    <!-- ===== MAIN ===== -->
     <main class="main-container">
-      <!-- LEFT: MAP -->
       <section class="panel ticks left-panel">
         <div class="panel-header">
           <div class="title"><span class="ico">⌖</span>실시간 위치 맵</div>
@@ -921,9 +960,7 @@
         </div>
       </section>
 
-      <!-- RIGHT -->
       <section class="right-panel">
-        <!-- DETECTION RESULT -->
         <div id="resultBox" class="card result-box standby">
           <div class="panel-header">
             <div class="title"><span class="ico">◎</span>탐지 결과</div>
@@ -950,7 +987,6 @@
           </div>
         </div>
 
-        <!-- EMAIL -->
         <div class="card email-box">
           <div class="panel-header">
             <div class="title"><span class="ico">✉</span>알림 수신 이메일</div>
@@ -968,7 +1004,6 @@ c@gmail.com
           </div>
         </div>
 
-        <!-- HISTORY -->
         <div class="panel ticks history-panel">
           <div class="panel-header">
             <div class="title"><span class="ico">⊞</span>최근 발생 이력 로그</div>
@@ -991,7 +1026,6 @@ c@gmail.com
       </section>
     </main>
 
-    <!-- ===== DEBUG ===== -->
     <div id="debugBox" class="debug-bottom">
       <span class="debug-title">Firebase 원본 수신 데이터</span>
       <span>연결 대기 중...</span>
