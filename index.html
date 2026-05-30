@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -6,164 +6,299 @@
   <title>AI 층간소음 진원지 레이더</title>
 
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
+    * {
       box-sizing: border-box;
     }
 
-    h1 {
-      color: #79ffc2;
-      margin-bottom: 5px;
-      font-size: 34px;
-      letter-spacing: 1px;
-      margin-top: 20px;
-      text-align: center;
+    :root {
+      --bg: #101214;
+      --panel: #1b1f24;
+      --panel-2: #242a31;
+      --line: #333b44;
+      --muted: #99a1aa;
+      --text: #f4f7fa;
+      --green: #79ffc2;
+      --red: #ff5f5f;
+      --blue: #4f8cff;
+      --shadow: 0 16px 38px rgba(0, 0, 0, 0.45);
     }
 
-    p {
-      color: #999;
-      margin-bottom: 25px;
-      font-size: 16px;
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top, #1b2525 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .page {
+      width: min(1180px, 100%);
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    header {
       text-align: center;
+      padding: 2px 0 4px;
+    }
+
+    h1 {
+      color: var(--green);
+      margin: 0;
+      font-size: clamp(24px, 3vw, 34px);
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 4px 0 0;
+      font-size: 14px;
     }
 
     .main-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      max-width: 780px;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 430px minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: rgba(27, 31, 36, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .left-panel {
+      min-height: 0;
+      padding: 14px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 12px;
     }
 
     .grid-container {
       display: grid;
-      grid-template-columns: repeat(3, 110px);
-      grid-template-rows: repeat(2, 110px);
-      gap: 20px;
-      background-color: #1f1f1f;
-      padding: 30px;
-      border-radius: 22px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.65);
-      margin-bottom: 25px;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 82px);
+      gap: 10px;
     }
 
     .zone {
-      background-color: #2b2b2b;
-      border: 2px solid #444;
-      border-radius: 12px;
+      background: #292f36;
+      border: 2px solid #454d57;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
-      font-weight: bold;
-      color: #555;
+      font-size: 24px;
+      font-weight: 800;
+      color: #79828c;
       position: relative;
-      transition: 0.25s;
+      transition: 0.18s ease;
     }
 
     .node-marker {
       position: absolute;
-      top: 9px;
-      right: 9px;
-      width: 18px;
-      height: 18px;
-      background-color: #4f8cff;
+      top: 8px;
+      right: 8px;
+      width: 15px;
+      height: 15px;
+      background: var(--blue);
       border-radius: 50%;
-      box-shadow: 0 0 14px #4f8cff;
+      box-shadow: 0 0 14px var(--blue);
     }
 
     .active {
-      background-color: #e04440 !important;
-      border-color: #ff7777 !important;
+      background: #e04440 !important;
+      border-color: #ff9898 !important;
       color: white !important;
-      box-shadow: 0 0 30px rgba(255, 70, 70, 0.9);
+      box-shadow: 0 0 28px rgba(255, 70, 70, 0.85);
       animation: pulse 0.8s infinite;
     }
 
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.04); }
+      50% { transform: scale(1.035); }
       100% { transform: scale(1); }
     }
 
-    .card {
+    .room-panel {
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #111;
+    }
+
+    .room-img {
       width: 100%;
-      max-width: 520px;
-      padding: 22px;
-      background-color: #1f1f1f;
-      border-radius: 12px;
-      box-shadow: 0 10px 22px rgba(0,0,0,0.35);
-      box-sizing: border-box;
-      margin-bottom: 18px;
+      height: 100%;
+      min-height: 220px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .room-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+    }
+
+    .room-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      pointer-events: none;
+    }
+
+    .room-cell {
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      font-weight: 800;
+      font-size: 15px;
+      padding: 10px;
+      transition: 0.18s ease;
+    }
+
+    .room-cell.active {
+      background: rgba(224, 68, 64, 0.35) !important;
+      border: 3px solid rgba(255, 210, 120, 0.98) !important;
+      animation: none;
+    }
+
+    .right-panel {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      background: rgba(27, 31, 36, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
     }
 
     .result-box {
-      border-left: 6px solid #79ffc2;
-      font-size: 18px;
-      line-height: 1.8;
-      display: block;
+      border-left: 6px solid var(--green);
+      line-height: 1.75;
+      font-size: 17px;
     }
 
     .result-box span {
-      color: #79ffc2;
-      font-weight: bold;
-      font-size: 22px;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 21px;
     }
 
     .standby span {
-      color: #888 !important;
+      color: #8a929b !important;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 18px;
     }
 
     .email-box textarea {
-      width: 96%;
-      height: 85px;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 15px;
-      resize: vertical;
-      box-sizing: border-box;
+      width: 100%;
+      height: 78px;
+      padding: 11px;
+      border: 1px solid #38414b;
+      border-radius: 10px;
+      margin-top: 9px;
+      font-size: 14px;
+      resize: none;
+      background: #11161b;
+      color: white;
+      outline: none;
+    }
+
+    .email-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
     }
 
     .email-box button {
-      padding: 12px 18px;
+      padding: 10px 16px;
       border: none;
-      border-radius: 8px;
-      background: #79ffc2;
-      font-weight: bold;
+      border-radius: 10px;
+      background: var(--green);
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 10px;
+      color: #0b0f0d;
+      flex: 0 0 auto;
     }
 
     .email-status {
-      margin-top: 10px;
-      color: #aaa;
-      font-size: 14px;
+      color: #aab2bb;
+      font-size: 13px;
       word-break: break-all;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
-    .right-panel h2 {
-      font-size: 22px;
-      color: #79ffc2;
-      margin: 0 0 16px 0;
-      border-bottom: 1px solid #333;
-      padding-bottom: 12px;
+    .debug-box {
+      min-height: 0;
+      padding: 12px 14px;
+      background: #151a1f;
+      border: 1px solid #333d47;
+      border-radius: 12px;
+      color: #9ba4ad;
+      font-size: 13px;
+      word-break: break-all;
+      overflow: hidden;
+    }
+
+    .ok { color: var(--green); }
+    .err { color: #ff8e8e; }
+
+    .history-panel {
+      width: min(880px, 100%);
+      margin: 0 auto;
+      padding: 12px 16px;
+    }
+
+    .history-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .history-head h2 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--green);
+    }
+
+    .history-hint {
+      font-size: 12px;
+      color: var(--muted);
     }
 
     .table-wrapper {
-      max-height: 230px;
+      max-height: 132px;
       overflow-y: auto;
-      padding-right: 5px;
+      padding-right: 4px;
     }
 
     .table-wrapper::-webkit-scrollbar { width: 6px; }
@@ -173,104 +308,232 @@
     .log-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 15px;
+      font-size: 14px;
       text-align: left;
     }
 
     .log-table th {
-      color: #999;
-      font-weight: 600;
-      padding: 10px 0;
-      border-bottom: 2px solid #333;
+      color: #9da6b0;
+      font-weight: 700;
+      padding: 7px 0;
+      border-bottom: 2px solid #343b44;
       position: sticky;
       top: 0;
-      background-color: #1f1f1f;
+      background: var(--panel);
       z-index: 1;
     }
 
     .log-table td {
-      padding: 10px 0;
-      border-bottom: 1px solid #2a2a2a;
-      color: #ccc;
+      padding: 7px 0;
+      border-bottom: 1px solid #2a3037;
+      color: #d0d6dd;
     }
 
-    .debug-box {
-      width: 100%;
-      max-width: 720px;
-      margin-top: 10px;
-      padding: 14px 18px;
-      background: #181818;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: #999;
-      font-size: 14px;
-      word-break: break-all;
-      box-sizing: border-box;
+    @media (max-width: 860px) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+        padding: 12px;
+      }
+
+      .page {
+        height: auto;
+        display: block;
+      }
+
+      header {
+        padding: 8px 0 14px;
+      }
+
+      .main-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .left-panel {
+        padding: 12px;
+      }
+
+      .grid-container {
+        grid-template-rows: repeat(2, 76px);
+        gap: 8px;
+      }
+
+      .zone {
+        font-size: 21px;
+      }
+
+      .room-img {
+        min-height: 205px;
+        max-height: 300px;
+      }
+
+      .right-panel {
+        display: grid;
+        grid-template-rows: auto;
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .email-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .email-box button {
+        width: 100%;
+      }
+
+      .history-panel {
+        margin-top: 12px;
+      }
+
+      .history-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .table-wrapper {
+        max-height: 230px;
+      }
     }
 
-    .ok { color: #79ffc2; }
-    .err { color: #ff7777; }
+    @media (max-width: 420px) {
+      body {
+        padding: 8px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+      }
+
+      .grid-container {
+        grid-template-rows: repeat(2, 68px);
+      }
+
+      .zone {
+        font-size: 19px;
+        border-radius: 12px;
+      }
+
+      .node-marker {
+        width: 12px;
+        height: 12px;
+        top: 6px;
+        right: 6px;
+      }
+
+      .card,
+      .history-panel {
+        padding: 13px;
+      }
+
+      .result-box span {
+        font-size: 19px;
+      }
+
+      .room-cell {
+        font-size: 13px;
+        padding: 8px;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <h1>🚨 AI 층간소음 진원지 레이더</h1>
-  <p>150cm x 100cm 실시간 관제 및 로그 시스템</p>
+  <div class="page">
+    <header>
+      <h1>🚨 AI 층간소음 진원지 레이더</h1>
+      <p class="subtitle">150cm x 100cm 실시간 관제 및 로그 시스템</p>
+    </header>
 
-  <div class="main-container">
-    <div class="grid-container">
-      <div id="z1" class="zone">P1<div class="node-marker"></div></div>
-      <div id="z2" class="zone">P2</div>
-      <div id="z3" class="zone">P3<div class="node-marker"></div></div>
-      <div id="z4" class="zone">P4<div class="node-marker"></div></div>
-      <div id="z5" class="zone">P5</div>
-      <div id="z6" class="zone">P6<div class="node-marker"></div></div>
-    </div>
+    <main class="main-container">
+      <section class="panel left-panel">
+        <div class="grid-container" aria-label="2x3 위치 표시">
+          <div id="z1" class="zone">P1<div class="node-marker"></div></div>
+          <div id="z2" class="zone">P2</div>
+          <div id="z3" class="zone">P3<div class="node-marker"></div></div>
+          <div id="z4" class="zone">P4<div class="node-marker"></div></div>
+          <div id="z5" class="zone">P5</div>
+          <div id="z6" class="zone">P6<div class="node-marker"></div></div>
+        </div>
 
-    <div id="resultBox" class="card result-box standby">
-      📍 진원지: <span id="resZone">대기중</span><br>
-      🔊 소음원: <span id="resSound">대기중</span><br>
-      🎯 정확도: <span id="resAcc">0</span>%<br>
-      🧩 클래스: <span id="resClass">STANDBY</span>
-    </div>
+        <div class="room-panel">
+          <img class="room-img" src="room.png" alt="방 구조 이미지" />
+          <div class="room-dim"></div>
+          <div class="room-grid" aria-hidden="true">
+            <div id="rz1" class="room-cell">P1</div>
+            <div id="rz2" class="room-cell">P2</div>
+            <div id="rz3" class="room-cell">P3</div>
+            <div id="rz4" class="room-cell">P4</div>
+            <div id="rz5" class="room-cell">P5</div>
+            <div id="rz6" class="room-cell">P6</div>
+          </div>
+        </div>
+      </section>
 
-    <div class="card email-box">
-      <b>📧 알림 받을 이메일 여러 명 입력</b><br>
-      <textarea id="emailInput" placeholder="a@gmail.com
+      <section class="right-panel">
+        <div id="resultBox" class="card result-box standby">
+          <div class="result-grid">
+            <div>📍 진원지: <span id="resZone">대기중</span></div>
+            <div>🔊 소음원: <span id="resSound">대기중</span></div>
+            <div>🎯 정확도: <span id="resAcc">0</span>%</div>
+            <div>🧩 클래스: <span id="resClass">STANDBY</span></div>
+          </div>
+        </div>
+
+        <div class="card email-box">
+          <b>📧 알림 받을 이메일 여러 명 입력</b>
+          <textarea id="emailInput" placeholder="a@gmail.com
 b@gmail.com
 c@gmail.com
 
 또는 a@gmail.com, b@gmail.com"></textarea>
-      <br>
-      <button onclick="saveEmails()">저장</button>
-      <div id="emailStatus" class="email-status">이메일 설정 확인 중...</div>
-    </div>
+          <div class="email-actions">
+            <button onclick="saveEmails()">저장</button>
+            <div id="emailStatus" class="email-status">이메일 설정 확인 중...</div>
+          </div>
+        </div>
 
-    <div class="card right-panel">
-      <h2>📋 최근 발생 이력 로그</h2>
+        <div id="debugBox" class="debug-box">Firebase REST 연결 대기 중...</div>
+      </section>
+    </main>
+
+    <section class="panel history-panel">
+      <div class="history-head">
+        <h2>📋 최근 발생 이력 로그</h2>
+        <div class="history-hint">최신 감지 순서로 표시</div>
+      </div>
       <div class="table-wrapper">
         <table class="log-table">
           <thead>
             <tr>
-              <th width="30%">시간</th>
-              <th width="20%">위치</th>
-              <th width="50%">소음 종류</th>
+              <th width="34%">시간</th>
+              <th width="18%">위치</th>
+              <th width="48%">소음 종류</th>
             </tr>
           </thead>
           <tbody id="logBody"></tbody>
         </table>
       </div>
-    </div>
-
-    <div id="debugBox" class="debug-box">Firebase REST 연결 대기 중...</div>
+    </section>
   </div>
 
   <script>
     const DB_URL = "https://noiseradar-8886e-default-rtdb.firebaseio.com";
     const STATUS_URL = DB_URL + "/current_status.json";
     const EMAIL_URL = DB_URL + "/settings/email_to.json";
+    const LOG_URL = DB_URL + "/recent_logs.json";
 
-    const ACTIVE_HOLD_MS = 8000;
+    const ACTIVE_HOLD_MS = 600000;
     const MAX_LOG_ROWS = 10;
 
     const debugBox = document.getElementById("debugBox");
@@ -279,6 +542,7 @@ c@gmail.com
 
     let lastTimestamp = 0;
     let lastActiveData = null;
+    const renderedLogKeys = new Set();
 
     function setDebug(msg, isError) {
       debugBox.className = isError ? "debug-box err" : "debug-box ok";
@@ -288,8 +552,18 @@ c@gmail.com
 
     function clearZones() {
       for (let i = 1; i <= 6; i++) {
-        document.getElementById("z" + i).classList.remove("active");
+        const zone = document.getElementById("z" + i);
+        const roomZone = document.getElementById("rz" + i);
+        if (zone) zone.classList.remove("active");
+        if (roomZone) roomZone.classList.remove("active");
       }
+    }
+
+    function activateZone(zone) {
+      const zoneEl = document.getElementById("z" + zone);
+      const roomZoneEl = document.getElementById("rz" + zone);
+      if (zoneEl) zoneEl.classList.add("active");
+      if (roomZoneEl) roomZoneEl.classList.add("active");
     }
 
     function setStandby() {
@@ -377,26 +651,31 @@ c@gmail.com
       }
     }
 
-    function addLog(data) {
-      if (!data || Number(data.zone) <= 0) return;
-
-      const ts = Number(data.timestamp || Date.now());
-      if (ts === lastTimestamp) return;
-      lastTimestamp = ts;
-
-      const timeString = data.timeText || new Date().toLocaleTimeString("ko-KR", {
+    function formatTime(data) {
+      return data.timeText || new Date().toLocaleTimeString("ko-KR", {
         hour12: false,
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit"
       });
+    }
+
+    function addLog(data, forceKey) {
+      if (!data || Number(data.zone) <= 0) return;
+
+      const ts = Number(data.timestamp || Date.now());
+      const key = forceKey || String(ts) + "_" + String(data.zone) + "_" + String(data.sound || data.noise || "");
+
+      if (renderedLogKeys.has(key)) return;
+      renderedLogKeys.add(key);
+      lastTimestamp = Math.max(lastTimestamp, ts);
 
       const sound = data.sound || data.noise || data.noiseType || "-";
       const acc = data.accuracy ?? data.confidence ?? 0;
 
       const row = document.createElement("tr");
       row.innerHTML =
-        "<td>" + timeString + "</td>" +
+        "<td>" + formatTime(data) + "</td>" +
         "<td><b style='color:#79ffc2;'>P" + data.zone + "</b></td>" +
         "<td>" + sound + " (" + acc + "%)</td>";
 
@@ -404,6 +683,29 @@ c@gmail.com
 
       while (logBody.children.length > MAX_LOG_ROWS) {
         logBody.removeChild(logBody.lastChild);
+      }
+    }
+
+    async function loadRecentLogs() {
+      try {
+        const res = await fetch(LOG_URL + "?orderBy=\"timestamp\"&limitToLast=" + MAX_LOG_ROWS + "&t=" + Date.now(), {
+          cache: "no-store"
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (!data) return;
+
+        const rows = Object.entries(data)
+          .map(([key, value]) => ({ key, value }))
+          .sort((a, b) => Number(a.value.timestamp || 0) - Number(b.value.timestamp || 0));
+
+        for (const item of rows) {
+          addLog(item.value, item.key);
+        }
+      } catch (err) {
+        console.log("recent_logs load error:", err.message);
       }
     }
 
@@ -429,9 +731,7 @@ c@gmail.com
       clearZones();
 
       const zone = Number(data.zone);
-      const zoneEl = document.getElementById("z" + zone);
-
-      if (zoneEl) zoneEl.classList.add("active");
+      activateZone(zone);
 
       resultBox.classList.remove("standby");
       document.getElementById("resZone").innerText = "P" + zone;
@@ -461,6 +761,7 @@ c@gmail.com
     }
 
     loadEmails();
+    loadRecentLogs();
     pollStatus();
     setInterval(pollStatus, 1000);
 
